@@ -53,7 +53,6 @@ class About extends Component {
                         renderItem={renderPartner}
                         keyExtractor={item => item.id.toString()}
                     />
-
                 </Card>
             </ScrollView>
         );
