@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import Home from "./HomeComponent";
-import Directory from "./DirectoryComponent";
-import About from "./AboutComponent";
-import Contact from "./ContactComponent";
+
+import Directory from "../components/DirectoryComponent";
+import CampsiteInfo from "../components/CampsiteInfoComponent";
+import Home from "../components/HomeComponent";
+import About from "../components/AboutComponent";
+import Contact from "../components/ContactComponent";
 import Reservation from "./ReservationComponent";
 import Favorites from "./FavoritesComponent";
-import CampsiteInfo from "./CampsiteInfoComponent";
 import Login from "./LoginComponent";
 import {
   View,
@@ -17,10 +18,9 @@ import {
   Alert,
   ToastAndroid,
 } from "react-native";
-import NetInfo from "@react-native-community/netinfo";
 import { createStackNavigator } from "react-navigation-stack";
-import { createDrawerNavigator, DrawerItems } from "react-navigation-drawer";
 import { createAppContainer } from "react-navigation";
+import { createDrawerNavigator, DrawerItems } from "react-navigation-drawer";
 import { Icon } from "react-native-elements";
 import SafeAreaView from "react-native-safe-area-view";
 import { connect } from "react-redux";
@@ -30,6 +30,7 @@ import {
   fetchPromotions,
   fetchPartners,
 } from "../redux/ActionCreators";
+import NetInfo from "@react-native-community/netinfo";
 
 const mapDispatchToProps = {
   fetchCampsites,
@@ -37,31 +38,6 @@ const mapDispatchToProps = {
   fetchPromotions,
   fetchPartners,
 };
-
-const LoginNavigator = createStackNavigator(
-  {
-    Login: { screen: Login },
-  },
-  {
-    defaultNavigationOptions: ({ navigation }) => ({
-      headerStyle: {
-        backgroundColor: "#5637DD",
-      },
-      headerTintColor: "#fff",
-      headerTitleStyle: {
-        color: "#fff",
-      },
-      headerLeft: (
-        <Icon
-          name="sign-in"
-          type="font-awesome"
-          iconStyle={styles.stackIcon}
-          onPress={() => navigation.toggleDrawer()}
-        />
-      ),
-    }),
-  }
-);
 
 const DirectoryNavigator = createStackNavigator(
   {
@@ -95,9 +71,7 @@ const DirectoryNavigator = createStackNavigator(
 );
 
 const HomeNavigator = createStackNavigator(
-  {
-    Home: { screen: Home },
-  },
+  { Home: { screen: Home } },
   {
     defaultNavigationOptions: ({ navigation }) => ({
       headerStyle: {
@@ -120,9 +94,7 @@ const HomeNavigator = createStackNavigator(
 );
 
 const AboutNavigator = createStackNavigator(
-  {
-    About: { screen: About },
-  },
+  { About: { screen: About } },
   {
     defaultNavigationOptions: ({ navigation }) => ({
       headerStyle: {
@@ -145,9 +117,7 @@ const AboutNavigator = createStackNavigator(
 );
 
 const ContactNavigator = createStackNavigator(
-  {
-    Contact: { screen: Contact },
-  },
+  { Contact: { screen: Contact } },
   {
     defaultNavigationOptions: ({ navigation }) => ({
       headerStyle: {
@@ -168,7 +138,6 @@ const ContactNavigator = createStackNavigator(
     }),
   }
 );
-
 const ReservationNavigator = createStackNavigator(
   {
     Reservation: { screen: Reservation },
@@ -218,6 +187,30 @@ const FavoritesNavigator = createStackNavigator(
     }),
   }
 );
+const LoginNavigator = createStackNavigator(
+  {
+    Login: { screen: Login },
+  },
+  {
+    defaultNavigationOptions: ({ navigation }) => ({
+      headerStyle: {
+        backgroundColor: "#5637DD",
+      },
+      headerTintColor: "#fff",
+      headerTitleStyle: {
+        color: "#fff",
+      },
+      headerLeft: (
+        <Icon
+          name="sign-in"
+          type="font-awesome"
+          iconStyle={styles.stackIcon}
+          onPress={() => navigation.toggleDrawer()}
+        />
+      ),
+    }),
+  }
+);
 
 const CustomDrawerContentComponent = (props) => (
   <ScrollView>
@@ -233,7 +226,7 @@ const CustomDrawerContentComponent = (props) => (
           />
         </View>
         <View style={{ flex: 2 }}>
-          <Text style={styles.drawerHeaderText}>Nucamp</Text>
+          <Text style={styles.drawerHeaderText}>NuCamp</Text>
         </View>
       </View>
       <DrawerItems {...props} />
@@ -335,15 +328,6 @@ class Main extends Component {
     this.props.fetchPromotions();
     this.props.fetchPartners();
 
-    NetInfo.fetch().then((connectInfo) => {
-      Platform.OS === "ios"
-        ? Alert.alert("Initial Network Connectivity Type:", connectionInfo.type)
-        : ToastAndroid.show(
-            "Initial Network Connectivity Type: " + connectionInfo.type,
-            ToastAndroid.LONG
-          );
-    });
-
     this.unsubscribeNetInfo = NetInfo.addEventListener((connectionInfo) => {
       this.handleConnectivityChange(connectionInfo);
     });
@@ -352,6 +336,16 @@ class Main extends Component {
   componentWillUnmount() {
     this.unsubscribeNetInfo();
   }
+
+  showNetInfo = async () => {
+    const connectionInfo = await NetInfo.fetch();
+    Platform.OS === "ios"
+      ? Alert.alert("Initial Network Connectivity Type:", connectionInfo.type)
+      : ToastAndroid.show(
+          "Initial Network Connectivity Type: " + connectionInfo.type,
+          ToastAndroid.LONG
+        );
+  };
 
   handleConnectivityChange = (connectionInfo) => {
     let connectionMsg = "You are now connected to an active network.";
